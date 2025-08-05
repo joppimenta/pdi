@@ -9,7 +9,7 @@ import json
 
 app = FastAPI()
 
-app.add_middleware( 
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -20,16 +20,19 @@ app.add_middleware(
 IMAGE_BASE_DIR = "imagens"
 ORIGINAL_SUBDIR = "original"
 SEGMENTED_SUBDIR = "segmentado"
+MASKS_SUBDIR = "masks"
 
 class CompararImagens(BaseModel):
     imagens_originais: List[str]  # URLs pra chamada no outro endpoint
+    imagens_mascaras: List[str]
     imagens_segmentadas: List[str]
     metricas_comparacao: List[Dict]
 
 # Vai ser atualizado a cada requisição
 IMAGE_STORAGE = {
-    "original": [],  # Imagens originais
-    "segmentado": []  # Imagens segmentadas
+    "original": [],
+    "segmentado": [],
+    "mascara": []
 }
 
 metricas = []
@@ -41,6 +44,7 @@ def obterImagensMetricas():
     try:
         IMAGE_STORAGE["original"].clear()
         IMAGE_STORAGE["segmentado"].clear()
+        IMAGE_STORAGE["mascara"].clear()
         metricas.clear()
 
         # path das imagens originais e segmentadas
@@ -52,6 +56,10 @@ def obterImagensMetricas():
         segmented_dir = Path(IMAGE_BASE_DIR) / SEGMENTED_SUBDIR
         for img_file in segmented_dir.glob("*"):
             IMAGE_STORAGE["segmentado"].append(str(img_file))
+
+        masks_dir = Path(IMAGE_BASE_DIR) / MASKS_SUBDIR
+        for img_file in masks_dir.glob("*"):
+            IMAGE_STORAGE["mascara"].append(str(img_file))
 
         try:
             with open('./metricas.json') as f:
@@ -71,6 +79,7 @@ async def compare_images():
 
     return {
         "imagens_originais": [f"/image-files/{path}" for path in IMAGE_STORAGE["original"]],
+        "imagens_mascaras": [f"/image-files/{path}" for path in IMAGE_STORAGE["mascara"]],
         "imagens_segmentadas": [f"/image-files/{path}" for path in IMAGE_STORAGE["segmentado"]],
         "metricas_comparacao": metricas
     }
