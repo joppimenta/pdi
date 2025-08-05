@@ -61,14 +61,14 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #3498db, #2980b9);
+    background: linear-gradient(45deg, #3cb371, #56ab2f);
     color: white;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(45deg, #2980b9, #3498db);
+    background: linear-gradient(45deg, #56ab2f, #3cb371);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 6px 20px rgba(86, 171, 47, 0.4);
 }
 
 .btn-secondary {

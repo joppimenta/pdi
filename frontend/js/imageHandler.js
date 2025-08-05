@@ -28,9 +28,9 @@ class ImageModalController {
                          font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001;">&times;</span>
             <div style="text-align: center;">
                 <img class="modal-content" id="modalImage" 
-                     style="max-width: 90vw; max-height: 80vh; border-radius: 8px;">
+                     style="object-fit: cover; width: 100%; height: 700px; max-width: 90vw; max-height: 80vh; border-radius: 8px;">
                 <div id="caption" 
-                     style="color: white; padding: 20px; font-size: 1.2rem; text-align: center;"></div>
+                     style="color: white; padding: 20px; font-size: 1.2rem;"></div>
             </div>
         `;
         
@@ -55,7 +55,6 @@ class ImageModalController {
     }
     
     open(src, caption) {
-        console.log(`Abrindo modal com imagem: ${src}`);
         if (!this.modal) {
             this.init();
         }
