@@ -60,10 +60,12 @@ class ImageService {
                 success: true,
                 data: {
                     originais: data.imagens_originais || [],
+                    mascaras: data.imagens_mascaras || [],
                     segmentadas: data.imagens_segmentadas || [],
                     metricas: data.metricas_comparacao || [],
                     hasMore: data.tem_mais || false,
                     totalOriginais: data.total_originais || 0,
+                    totalMascaras: data.total_mascaras || 0,
                     totalSegmentadas: data.total_segmentadas || 0
                 }
             };
@@ -79,6 +81,7 @@ class ImageService {
     async loadMultiplePages(startPage, endPage, perPage = CONFIG.API.DEFAULT_PARAMS.BULK_LOAD_SIZE) {
         const results = {
             originais: [],
+            mascaras: [],
             segmentadas: [],
             metricas: []
         };
@@ -88,6 +91,7 @@ class ImageService {
                 const response = await this.loadImagesPage(page, perPage);
                 if (response.success) {
                     results.originais.push(...response.data.originais);
+                    results.mascaras.push(...response.data.mascaras);
                     results.segmentadas.push(...response.data.segmentadas);
                     results.metricas.push(...response.data.metricas);
                     
@@ -108,6 +112,7 @@ class ImageService {
     async loadAllImages() {
         const results = {
             originais: [],
+            mascaras: [],
             segmentadas: [],
             metricas: []
         };
@@ -121,6 +126,7 @@ class ImageService {
                 
                 if (response.success) {
                     results.originais.push(...response.data.originais);
+                    results.mascaras.push(...response.data.mascaras);
                     results.segmentadas.push(...response.data.segmentadas);
                     results.metricas.push(...response.data.metricas);
                     

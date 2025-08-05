@@ -122,7 +122,7 @@ class ImageComponentGenerator {
         const imageGroup = utils.createElement('div', 'image-group');
         
         imageGroup.innerHTML = `
-            <h3 style="color: #2c3e50; margin-bottom: 10px;">${title} ${index + 1}</h3>
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">${title}</h3>
             <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">${imageName}</p>
             <div class="image-wrapper">
                 <img src="${fixedImageUrl}" 
@@ -142,7 +142,7 @@ class ImageComponentGenerator {
         const imageGroup = utils.createElement('div', 'image-group');
         
         imageGroup.innerHTML = `
-            <h3 style="color: #95a5a6; margin-bottom: 15px;">${title} ${index + 1}</h3>
+            <h3 style="color: #95a5a6; margin-bottom: 15px;">${title}</h3>
             <div style="background: #ecf0f1; padding: 40px; border-radius: 8px; 
                         color: #7f8c8d; font-style: italic;">
                 Imagem não disponível
@@ -156,7 +156,7 @@ class ImageComponentGenerator {
         const metricsCard = utils.createElement('div', 'metrics-card');
         
         metricsCard.innerHTML = `
-            <h4>Métricas de Comparação ${index + 1}</h4>
+            <h4>Métricas de Comparação</h4>
             <div class="metrics-grid">
                 <div class="metric-item">
                     <span class="metric-label">Similaridade:</span>
@@ -268,12 +268,12 @@ class ImageHandler {
         }
     }
      
-    renderImages(originais, segmentadas, metricas) {
+    renderImages(originais, mascaras, segmentadas, metricas) {
         const container = document.getElementById('imagesContainer');
         container.innerHTML = '';
         
         // Verificar se há imagens
-        if (originais.length === 0 && segmentadas.length === 0) {
+        if (originais.length === 0 && mascaras.length === 0 && segmentadas.length === 0) {
             container.appendChild(this.generator.createNoImagesMessage());
             return;
         }
@@ -282,16 +282,23 @@ class ImageHandler {
         UI.showContent();
         
         // Adicionar estatísticas
-        const statsComponent = this.generator.createStatsComponent(originais.length, segmentadas.length);
+        const statsComponent = this.generator.createStatsComponent(originais.length, mascaras.length, segmentadas.length);
         container.appendChild(statsComponent);
         
         // Determinar número de comparações
-        const maxComparacoes = Math.max(originais.length, segmentadas.length);
+        const maxComparacoes = Math.max(originais.length, mascaras.length, segmentadas.length);
         
         // Criar comparações
         for (let i = 0; i < maxComparacoes; i++) {
             const imageComparison = utils.createElement('div', 'image-comparison');
-            const imagePair = utils.createElement('div', 'image-pair');
+
+            const titulo = utils.createElement('h2', "image-comparison-title");
+            titulo.textContent = `Comparação ${i + 1}`;
+            titulo.style.marginBottom = '15px';
+            titulo.style.color = '#2c3e50'; // opcional
+            imageComparison.appendChild(titulo);
+
+            const imagePair = utils.createElement('div', 'image-trio');
             
             // Imagem Original
             if (i < originais.length) {
@@ -301,6 +308,19 @@ class ImageHandler {
                     originalUrl, originalName, 'Imagem original', i
                 );
                 imagePair.appendChild(originalComponent);
+            } else {
+                const placeholder = this.generator.createImagePlaceholder('Original', i);
+                imagePair.appendChild(placeholder);
+            }
+
+            // Imagens máscaras
+            if (i < mascaras.length) {
+                const maskUrl = API.images.getImageUrl(mascaras[i]);
+                const maskName = utils.getFileName(mascaras[i]);
+                const maskComponent = this.generator.createImageComponent(
+                    maskUrl, maskName, 'Máscara', i
+                );
+                imagePair.appendChild(maskComponent);
             } else {
                 const placeholder = this.generator.createImagePlaceholder('Original', i);
                 imagePair.appendChild(placeholder);

@@ -4,6 +4,7 @@ class AppState {
         this.showingAll = false;
         this.allImages = {
             originais: [],
+            mascaras: [],
             segmentadas: [],
             metricas: []
         };
@@ -14,6 +15,7 @@ class AppState {
         this.showingAll = false;
         this.allImages = {
             originais: [],
+            mascaras: [],
             segmentadas: [],
             metricas: []
         };
@@ -21,6 +23,7 @@ class AppState {
     
     addImages(newImages) {
         this.allImages.originais.push(...newImages.originais);
+        this.allImages.mascaras.push(...newImages.mascaras);
         this.allImages.segmentadas.push(...newImages.segmentadas);
         this.allImages.metricas.push(...newImages.metricas);
     }
@@ -32,6 +35,7 @@ class AppState {
     getTotalImages() {
         return {
             originais: this.allImages.originais.length,
+            mascaras: this.allImages.mascaras.length,
             segmentadas: this.allImages.segmentadas.length,
             metricas: this.allImages.metricas.length
         };
@@ -114,6 +118,7 @@ class AppController {
 
             window.ImageHandler.renderImages(
                 this.state.allImages.originais,
+                this.state.allImages.mascaras,
                 this.state.allImages.segmentadas,
                 this.state.allImages.metricas
             );
@@ -152,6 +157,7 @@ class AppController {
             
             utils.Logger.info('Dados carregados:', {
                 originais: data.originais.length,
+                mascaras: data.mascaras.length,
                 segmentadas: data.segmentadas.length,
                 metricas: data.metricas.length,
                 hasMore: data.hasMore
@@ -160,6 +166,7 @@ class AppController {
             // Renderizar imagens
             window.ImageHandler.renderImages(
                 this.state.allImages.originais,
+                this.state.allImages.mascaras,
                 this.state.allImages.segmentadas,
                 this.state.allImages.metricas
             );
@@ -178,7 +185,7 @@ class AppController {
     
     // Atualizar controles de paginação
     updatePaginationControls(data) {
-        const hasMoreImages = data.totalOriginais > CONFIG.API.DEFAULT_PARAMS.PER_PAGE || 
+        const hasMoreImages = data.totalOriginais > CONFIG.API.DEFAULT_PARAMS.PER_PAGE || data.totalMascaras > CONFIG.API.DEFAULT_PARAMS.PER_PAGE ||
                              data.totalSegmentadas > CONFIG.API.DEFAULT_PARAMS.PER_PAGE;
         
         if (data.hasMore) {
