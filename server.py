@@ -6,6 +6,8 @@ from typing import List, Dict
 #import os
 from pathlib import Path
 import json
+from PIL import Image
+import numpy as np
 
 app = FastAPI()
 
@@ -37,8 +39,39 @@ IMAGE_STORAGE = {
 
 metricas = []
 
+def calcular_metricas(mask_path: Path, segment_path: Path) -> Dict:
+    """Compara uma máscara e uma segmentação e retorna as métricas"""
+    try:
+        mask = Image.open(mask_path).convert("L")
+        segment = Image.open(segment_path).convert("L")
+
+        mask_np = np.array(mask) > 0
+        segment_np = np.array(segment) > 0
+
+        intersection = np.logical_and(mask_np, segment_np).sum()
+        union = np.logical_or(mask_np, segment_np).sum()
+        total_mask = mask_np.sum()
+        total_segment = segment_np.sum()
+
+        iou = intersection / union if union != 0 else 0
+        dice = 2 * intersection / (total_mask + total_segment) if (total_mask + total_segment) != 0 else 0
+        precision = intersection / total_segment if total_segment != 0 else 0
+        similarity = (mask_np == segment_np).sum() / mask_np.size
+
+        return {
+            "mask": mask_path.name,
+            "segmentada": segment_path.name,
+            "similarity": round(similarity, 4),
+            "iou": round(iou * 100, 2),
+            "dice": round(dice * 100, 2),
+            "precision": round(precision, 4)
+        }
+    except Exception as e:
+        print(f"Erro ao comparar {mask_path} e {segment_path}: {e}")
+        return {}
+
 def obterImagensMetricas():
-    """Atualiza IMAGE_STORAGE com imagens locais salvas"""
+    """Atualiza IMAGE_STORAGE com imagens locais salvas e calcula métricas"""
     global metricas
 
     try:
@@ -47,26 +80,34 @@ def obterImagensMetricas():
         IMAGE_STORAGE["mascara"].clear()
         metricas.clear()
 
-        # path das imagens originais e segmentadas
+        # Diretórios
         original_dir = Path(IMAGE_BASE_DIR) / ORIGINAL_SUBDIR
+        segmented_dir = Path(IMAGE_BASE_DIR) / SEGMENTED_SUBDIR
+        masks_dir = Path(IMAGE_BASE_DIR) / MASKS_SUBDIR
+
         for img_file in original_dir.glob("*"):
             IMAGE_STORAGE["original"].append(str(img_file))
 
+        seg_paths = sorted(list(segmented_dir.glob("*")))
+        mask_paths = sorted(list(masks_dir.glob("*")))
 
-        segmented_dir = Path(IMAGE_BASE_DIR) / SEGMENTED_SUBDIR
-        for img_file in segmented_dir.glob("*"):
+        for img_file in seg_paths:
             IMAGE_STORAGE["segmentado"].append(str(img_file))
-
-        masks_dir = Path(IMAGE_BASE_DIR) / MASKS_SUBDIR
-        for img_file in masks_dir.glob("*"):
+        for img_file in mask_paths:
             IMAGE_STORAGE["mascara"].append(str(img_file))
 
-        try:
-            with open('./metricas.json') as f:
-                metricas.extend(json.load(f))
-        except Exception as e:
-                print(f"Erro ao carregar métricas: {e}")
-                return []
+        # Cálculo das métricas
+        metricas_calculadas = []
+        for mask_path, seg_path in zip(mask_paths, seg_paths):
+            m = calcular_metricas(mask_path, seg_path)
+            if m:
+                metricas_calculadas.append(m)
+
+        metricas.extend(metricas_calculadas)
+
+        # Salvar em metricas.json
+        with open('metricas.json', 'w') as f:
+            json.dump(metricas_calculadas, f, indent=2)
 
     except Exception as e:
         print(f"Erro na atualização das imagens: {e}")
