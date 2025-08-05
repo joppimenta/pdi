@@ -85,12 +85,12 @@ def obterImagensMetricas():
         segmented_dir = Path(IMAGE_BASE_DIR) / SEGMENTED_SUBDIR
         masks_dir = Path(IMAGE_BASE_DIR) / MASKS_SUBDIR
 
-        for img_file in original_dir.glob("*"):
-            IMAGE_STORAGE["original"].append(str(img_file))
-
+        orig_paths = sorted(list(original_dir.glob("*")))
         seg_paths = sorted(list(segmented_dir.glob("*")))
         mask_paths = sorted(list(masks_dir.glob("*")))
 
+        for img_file in orig_paths:
+            IMAGE_STORAGE["original"].append(str(img_file))
         for img_file in seg_paths:
             IMAGE_STORAGE["segmentado"].append(str(img_file))
         for img_file in mask_paths:
