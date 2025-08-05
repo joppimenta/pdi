@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict
 #import os
@@ -7,6 +8,14 @@ from pathlib import Path
 import json
 
 app = FastAPI()
+
+app.add_middleware( 
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 IMAGE_BASE_DIR = "imagens"
 ORIGINAL_SUBDIR = "original"

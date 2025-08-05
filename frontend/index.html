@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segmentação - UNet++</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Segmentação de imagens médicas usando UNet++</h1>
+            <p>Compare máscaras pulmonares com máscaras de infecção/lesões</p>
+        </header>
+
+        <main>
+            <div class="controls">
+                <button id="loadImagesBtn" class="btn btn-primary">
+                    Carregar Imagens
+                </button>
+                <button id="refreshBtn" class="btn btn-secondary">
+                    Atualizar
+                </button>
+                <button id="loadMoreBtn" class="btn btn-secondary hidden">
+                    Carregar Mais 5 ⬇️
+                </button>
+                <button id="showAllBtn" class="btn btn-secondary hidden">
+                    Mostrar Todas
+                </button>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Carregando imagens...</p>
+            </div>
+
+            <div id="errorMessage" class="error-message hidden"></div>
+
+            <div id="imagesSection" class="section hidden">
+                <h2>Comparação de Imagens</h2>
+                <div id="imagesContainer" class="images-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/config.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/imageHandler.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+
+</html>
