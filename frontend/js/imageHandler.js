@@ -55,6 +55,7 @@ class ImageModalController {
     }
     
     open(src, caption) {
+        console.log(`Abrindo modal com imagem: ${src}`);
         if (!this.modal) {
             this.init();
         }
@@ -116,16 +117,19 @@ class ImageComponentGenerator {
     
     // Criar componente de imagem individual
     createImageComponent(imageUrl, imageName, title, index) {
+        // Barras invertidas '\' causam um problema de parsing no HTML pois são interpretadas como caracteres de escape e desaparecem, o que causa que o modal use o caminho errado para a imagem. Substitua por barras normais '/'.
+        const fixedImageUrl = imageUrl.replace(/\\/g, '/'); 
+
         const imageGroup = utils.createElement('div', 'image-group');
         
         imageGroup.innerHTML = `
             <h3 style="color: #2c3e50; margin-bottom: 10px;">${title} ${index + 1}</h3>
             <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">${imageName}</p>
             <div class="image-wrapper">
-                <img src="${imageUrl}" 
+                <img src="${fixedImageUrl}" 
                      alt="${title} ${index + 1}" 
                      class="comparison-image"
-                     onclick="window.ImageModal.open('${imageUrl}', '${title} ${index + 1}: ${imageName}')"
+                     onclick="window.ImageModal.open('${fixedImageUrl}', '${title} ${index + 1}: ${imageName}')"
                      onload="this.style.opacity='1'"
                      onerror="window.ImageHandler.handleError(this, '${title} ${index + 1}')">
             </div>
@@ -295,7 +299,7 @@ class ImageHandler {
                 const originalUrl = API.images.getImageUrl(originais[i]);
                 const originalName = utils.getFileName(originais[i]);
                 const originalComponent = this.generator.createImageComponent(
-                    originalUrl, originalName, 'Máscara Pulmonar', i
+                    originalUrl, originalName, 'Imagem original', i
                 );
                 imagePair.appendChild(originalComponent);
             } else {
@@ -308,7 +312,7 @@ class ImageHandler {
                 const segmentedUrl = API.images.getImageUrl(segmentadas[i]);
                 const segmentedName = utils.getFileName(segmentadas[i]);
                 const segmentedComponent = this.generator.createImageComponent(
-                    segmentedUrl, segmentedName, 'Máscara de Infecção', i
+                    segmentedUrl, segmentedName, 'Resultado segmentado', i
                 );
                 imagePair.appendChild(segmentedComponent);
             } else {
