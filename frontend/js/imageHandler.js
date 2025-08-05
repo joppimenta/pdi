@@ -85,7 +85,7 @@ class ImageModalController {
 }
 
 class ImageComponentGenerator {
-    createStatsComponent(totalOriginais, totalSegmentadas) {
+    createStatsComponent(totalOriginais, totalMascaras, totalSegmentadas) {
         const statsDiv = utils.createElement('div');
         statsDiv.style.cssText = `
             background: #e8f4fd;
@@ -95,19 +95,20 @@ class ImageComponentGenerator {
             border-left: 4px solid #3498db;
         `;
         
-        const maxComparacoes = Math.min(totalOriginais, totalSegmentadas);
+        const maxComparacoes = Math.min(totalOriginais, totalMascaras, totalSegmentadas);
         
         statsDiv.innerHTML = `
-            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">Estatísticas das Imagens Médicas</h4>
+            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">Estatísticas das Imagens</h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                <div><strong>Máscaras Pulmonares:</strong> ${totalOriginais}</div>
-                <div><strong>Máscaras de Infecção:</strong> ${totalSegmentadas}</div>
+                <div><strong>Imagens pulmonares</strong> ${totalOriginais}</div>
+                <div><strong>Máscaras:</strong> ${totalMascaras}</div>
+                <div><strong>Segmentações:</strong> ${totalSegmentadas}</div>
                 <div><strong>Comparações Possíveis:</strong> ${maxComparacoes}</div>
             </div>
             <div style="margin-top: 10px; padding: 10px; background: rgba(52, 152, 219, 0.1); 
                         border-radius: 4px; font-size: 0.9em;">
-                <strong>Explicação:</strong> As máscaras pulmonares mostram o contorno completo dos pulmões, 
-                enquanto as máscaras de infecção destacam apenas as áreas com lesões ou infecções detectadas pela UNet++.
+                <strong>Explicação:</strong> As imagens pulmonares mostram a figura completa dos pulmões, 
+                enquanto as segmentações destacam apenas as áreas com lesões ou infecções detectadas pela UNet++.
             </div>
         `;
         
